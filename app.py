@@ -8,14 +8,6 @@ st.set_page_config(page_title="Ansiedade Sob Controle", layout="centered")
 arquivo = "dados.csv"
 
 # =========================
-# 🧠 Gerador de título (até 4 palavras)
-# =========================
-def gerar_titulo(situacao, pensamento):
-    texto = (situacao + " " + pensamento).strip()
-    palavras = texto.split()
-    return " ".join(palavras[:4]) if palavras else ""
-
-# =========================
 # 🔥 Carregar dados com proteção
 # =========================
 def carregar_dados():
@@ -72,26 +64,16 @@ with st.form("form", clear_on_submit=True):
     pensamento = st.text_area("Pensamento")
     acao = st.text_area("Como agi")
 
-    # 🔥 SUGESTÃO VISUAL (fora do input)
-    titulo_sugerido = gerar_titulo(situacao, pensamento)
-
-    if titulo_sugerido:
-        st.caption(f"Sugestão: {titulo_sugerido}")
-
-    # 🔥 INPUT LIMPO (sem value travado)
-    titulo = st.text_input("Título do registro", placeholder="Digite ou use a sugestão acima")
+    titulo = st.text_input("Título do registro", placeholder="Digite um título curto")
 
     salvar = st.form_submit_button("Salvar")
 
     if salvar:
 
-        # 🔥 usa sugestão se campo estiver vazio
-        titulo_final = titulo if titulo.strip() else titulo_sugerido
-
         df_novo = pd.DataFrame([{
             "data": datetime.now(),
             "nivel": nivel,
-            "titulo": titulo_final,
+            "titulo": titulo,
             "situacao": situacao,
             "pensamento": pensamento,
             "acao": acao
