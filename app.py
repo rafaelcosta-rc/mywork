@@ -5,37 +5,61 @@ import os
 
 st.set_page_config(page_title="Ansiedade Sob Controle", layout="centered")
 
-# Estilo visual (premium simples)
-st.markdown("""
-    <style>
-    body {background-color: #F2F2F2;}
-    .stButton>button {
-        background-color: #1f2937;
-        color: white;
-        border-radius: 8px;
-        height: 3em;
-        width: 100%;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-st.title("🧠 Ansiedade Sob Controle")
-st.write("Registre, entenda e evolua sua ansiedade diariamente.")
-
 arquivo = "dados.csv"
 
+# 🎨 Função cor do termômetro
+def cor_nivel(n):
+    if n <= 3:
+        return "green"
+    elif n <= 6:
+        return "orange"
+    else:
+        return "red"
+
+# 🧠 Gerador simples de título (simula IA)
+def gerar_titulo(situacao, pensamento):
+    base = (situacao + " " + pensamento).strip()
+    return base[:40] + "..." if len(base) > 40 else base
+
+st.title("🧠 Ansiedade Sob Controle")
+
+# 🔁 Session state (para limpar campos)
+if "situacao" not in st.session_state:
+    st.session_state.situacao = ""
+if "pensamento" not in st.session_state:
+    st.session_state.pensamento = ""
+if "acao" not in st.session_state:
+    st.session_state.acao = ""
+
+# 📍 Registro
 st.subheader("📍 Registro de Hoje")
 
 nivel = st.slider("Nível de ansiedade", 0, 10)
-situacao = st.text_area("Situação")
-pensamento = st.text_area("Pensamento")
+
+# 🎨 Barra visual tipo termômetro
+cor = cor_nivel(nivel)
+st.markdown(f"""
+<div style="width:100%; background:#ddd; border-radius:10px;">
+<div style="width:{nivel*10}%; background:{cor}; padding:10px; border-radius:10px;"></div>
+</div>
+""", unsafe_allow_html=True)
+
+situacao = st.text_area("Situação", key="situacao")
+pensamento = st.text_area("Pensamento", key="pensamento")
+acao = st.text_area("Como agi", key="acao")
+
+# 🧠 título automático
+titulo = gerar_titulo(situacao, pensamento)
+st.write(f"📌 Título sugerido: **{titulo}**")
 
 if st.button("Salvar registro"):
     data = {
         "data": datetime.now(),
         "nivel": nivel,
+        "titulo": titulo,
         "situacao": situacao,
-        "pensamento": pensamento
+        "pensamento": pensamento,
+        "acao": acao
     }
 
     df_novo = pd.DataFrame([data])
@@ -47,35 +71,50 @@ if st.button("Salvar registro"):
 
     st.success("Registro salvo com sucesso!")
 
+    # 🔁 limpar campos
+    st.session_state.situacao = ""
+    st.session_state.pensamento = ""
+    st.session_state.acao = ""
+
 st.divider()
 
+# 📊 Evolução
 st.subheader("📊 Sua evolução")
 
 if os.path.exists(arquivo):
     df = pd.read_csv(arquivo)
+
     st.line_chart(df["nivel"])
+
+    # 📌 histórico clicável (melhor que gráfico clicável)
+    st.subheader("📚 Histórico")
+
+    opcao = st.selectbox(
+        "Selecione um registro",
+        df.index,
+        format_func=lambda i: f"{df.loc[i,'data']} - {df.loc[i,'titulo']}"
+    )
+
+    registro = df.loc[opcao]
+
+    st.markdown("### Detalhes do registro")
+    st.write(f"📅 Data: {registro['data']}")
+    st.write(f"🧠 Nível: {registro['nivel']}")
+    st.write(f"📌 Título: {registro['titulo']}")
+    st.write(f"📍 Situação: {registro['situacao']}")
+    st.write(f"💭 Pensamento: {registro['pensamento']}")
+    st.write(f"⚡ Como agi: {registro['acao']}")
+
 else:
     st.info("Nenhum dado registrado ainda.")
 
-if os.path.exists(arquivo):
-    media = df["nivel"].mean()
-    st.write(f"📈 Média de ansiedade: {round(media,1)}")
-
-    if media <= 3:
-        st.success("Baixo nível de ansiedade. Continue assim.")
-    elif media <= 7:
-        st.warning("Nível moderado. Atenção aos padrões.")
-    else:
-        st.error("Nível alto. Considere agir e buscar suporte.")
-
 st.divider()
 
+# 💰 Integração com e-book
 st.subheader("📘 Aprofunde seu controle")
 
-st.write("Quer ir além do acompanhamento?")
-
 st.markdown("""
-👉 Acesse o método completo no e-book:
+👉 Acesse o método completo:
 
 [📥 Ansiedade Sob Controle](SEU_LINK_AQUI)
 """)
