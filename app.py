@@ -67,3 +67,15 @@ if os.path.exists(arquivo):
         st.warning("Nível moderado. Atenção aos padrões.")
     else:
         st.error("Nível alto. Considere agir e buscar suporte.")
+
+st.divider()
+
+st.subheader("📘 Aprofunde seu controle")
+
+st.write("Quer ir além do acompanhamento?")
+
+st.markdown("""
+👉 Acesse o método completo no e-book:
+
+[📥 Ansiedade Sob Controle](SEU_LINK_AQUI)
+""")
