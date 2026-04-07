@@ -8,26 +8,15 @@ st.set_page_config(page_title="Ansiedade Sob Controle", layout="centered")
 arquivo = "dados.csv"
 
 # =========================
-# 🎨 Cor tipo termômetro
-# =========================
-def cor_nivel(n):
-    if n <= 3:
-        return "#22c55e"
-    elif n <= 6:
-        return "#f97316"
-    else:
-        return "#ef4444"
-
-# =========================
-# 🧠 Título curto (máx 4 palavras)
+# 🧠 Gerador de título (até 4 palavras)
 # =========================
 def gerar_titulo(situacao, pensamento):
     texto = (situacao + " " + pensamento).strip()
-    palavras = texto.split()[:4]
-    return " ".join(palavras)
+    palavras = texto.split()
+    return " ".join(palavras[:4]) if palavras else ""
 
 # =========================
-# 🔥 RESET AUTOMÁTICO CSV
+# 🔥 Carregar dados com proteção
 # =========================
 def carregar_dados():
     if not os.path.exists(arquivo):
@@ -36,9 +25,9 @@ def carregar_dados():
     try:
         df = pd.read_csv(arquivo, on_bad_lines='skip')
 
-        colunas_esperadas = ["data", "nivel", "titulo", "situacao", "pensamento", "acao"]
+        colunas = ["data", "nivel", "titulo", "situacao", "pensamento", "acao"]
 
-        if not all(col in df.columns for col in colunas_esperadas):
+        if not all(col in df.columns for col in colunas):
             os.remove(arquivo)
             return pd.DataFrame()
 
@@ -55,6 +44,22 @@ st.title("🧠 Ansiedade Sob Controle")
 st.write("Registre e acompanhe sua evolução.")
 
 # =========================
+# BARRA GRADIENTE (LEGENDA)
+# =========================
+st.markdown("""
+<div style="
+    width:100%;
+    height:15px;
+    border-radius:10px;
+    background: linear-gradient(to right, green, yellow, orange, red);
+    margin-bottom:10px;
+"></div>
+<div style="display:flex; justify-content:space-between; font-size:12px;">
+<span>0</span><span>10</span>
+</div>
+""", unsafe_allow_html=True)
+
+# =========================
 # FORMULÁRIO
 # =========================
 st.subheader("📍 Registro de Hoje")
@@ -63,21 +68,18 @@ with st.form("form", clear_on_submit=True):
 
     nivel = st.slider("Nível de ansiedade", 0, 10)
 
-    # barra visual
-    cor = cor_nivel(nivel)
-    st.markdown(f"""
-    <div style="width:100%; background:#ddd; border-radius:10px;">
-        <div style="width:{nivel*10}%; background:{cor}; padding:10px; border-radius:10px;"></div>
-    </div>
-    """, unsafe_allow_html=True)
-
     situacao = st.text_area("Situação")
     pensamento = st.text_area("Pensamento")
     acao = st.text_area("Como agi")
 
+    # 🔥 sugestão dinâmica
     titulo_sugerido = gerar_titulo(situacao, pensamento)
 
-    titulo = st.text_input("Título do registro", value=titulo_sugerido)
+    titulo = st.text_input(
+        "Título do registro",
+        value=titulo_sugerido,
+        placeholder="Sugestão automática aparecerá aqui"
+    )
 
     salvar = st.form_submit_button("Salvar")
 
@@ -100,7 +102,7 @@ with st.form("form", clear_on_submit=True):
         st.success("Registro salvo com sucesso!")
 
 # =========================
-# LEITURA SEGURA
+# DADOS
 # =========================
 st.divider()
 st.subheader("📊 Evolução")
@@ -113,21 +115,22 @@ if not df.empty:
 
     st.subheader("📚 Histórico")
 
-    idx = st.selectbox(
-        "Selecione um registro",
-        df.index,
-        format_func=lambda i: f"{df.loc[i,'data']} - {df.loc[i,'titulo']}"
-    )
+    # 🔥 opção vazia inicial
+    opcoes = ["Selecione um registro"] + list(df.index)
 
-    r = df.loc[idx]
+    escolha = st.selectbox("Escolha", opcoes)
 
-    st.markdown("### Detalhes")
-    st.write(f"📅 Data: {r['data']}")
-    st.write(f"🧠 Nível: {r['nivel']}")
-    st.write(f"📌 Título: {r['titulo']}")
-    st.write(f"📍 Situação: {r['situacao']}")
-    st.write(f"💭 Pensamento: {r['pensamento']}")
-    st.write(f"⚡ Como agi: {r['acao']}")
+    if escolha != "Selecione um registro":
+
+        r = df.loc[escolha]
+
+        st.markdown("### Detalhes")
+        st.write(f"📅 Data: {r['data']}")
+        st.write(f"🧠 Nível: {r['nivel']}")
+        st.write(f"📌 Título: {r['titulo']}")
+        st.write(f"📍 Situação: {r['situacao']}")
+        st.write(f"💭 Pensamento: {r['pensamento']}")
+        st.write(f"⚡ Como agi: {r['acao']}")
 
 else:
     st.info("Nenhum registro ainda.")
