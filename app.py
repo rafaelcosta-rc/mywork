@@ -24,12 +24,11 @@ def gerar_titulo(situacao, pensamento):
 st.title("🧠 Ansiedade Sob Controle")
 
 # 🔁 Session state (para limpar campos)
-if "situacao" not in st.session_state:
-    st.session_state.situacao = ""
-if "pensamento" not in st.session_state:
-    st.session_state.pensamento = ""
-if "acao" not in st.session_state:
-    st.session_state.acao = ""
+st.session_state.update({
+    "situacao": "",
+    "pensamento": "",
+    "acao": ""
+}) 
 
 # 📍 Registro
 st.subheader("📍 Registro de Hoje")
