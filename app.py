@@ -44,7 +44,7 @@ st.title("🧠 Ansiedade Sob Controle")
 st.write("Registre e acompanhe sua evolução.")
 
 # =========================
-# BARRA GRADIENTE (LEGENDA)
+# BARRA GRADIENTE
 # =========================
 st.markdown("""
 <div style="
@@ -72,23 +72,26 @@ with st.form("form", clear_on_submit=True):
     pensamento = st.text_area("Pensamento")
     acao = st.text_area("Como agi")
 
-    # 🔥 sugestão dinâmica
+    # 🔥 SUGESTÃO VISUAL (fora do input)
     titulo_sugerido = gerar_titulo(situacao, pensamento)
 
-    titulo = st.text_input(
-        "Título do registro",
-        value=titulo_sugerido,
-        placeholder="Sugestão automática aparecerá aqui"
-    )
+    if titulo_sugerido:
+        st.caption(f"Sugestão: {titulo_sugerido}")
+
+    # 🔥 INPUT LIMPO (sem value travado)
+    titulo = st.text_input("Título do registro", placeholder="Digite ou use a sugestão acima")
 
     salvar = st.form_submit_button("Salvar")
 
     if salvar:
 
+        # 🔥 usa sugestão se campo estiver vazio
+        titulo_final = titulo if titulo.strip() else titulo_sugerido
+
         df_novo = pd.DataFrame([{
             "data": datetime.now(),
             "nivel": nivel,
-            "titulo": titulo,
+            "titulo": titulo_final,
             "situacao": situacao,
             "pensamento": pensamento,
             "acao": acao
@@ -115,7 +118,6 @@ if not df.empty:
 
     st.subheader("📚 Histórico")
 
-    # 🔥 opção vazia inicial
     opcoes = ["Selecione um registro"] + list(df.index)
 
     escolha = st.selectbox("Escolha", opcoes)
