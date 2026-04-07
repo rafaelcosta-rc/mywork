@@ -56,3 +56,14 @@ if os.path.exists(arquivo):
     st.line_chart(df["nivel"])
 else:
     st.info("Nenhum dado registrado ainda.")
+
+if os.path.exists(arquivo):
+    media = df["nivel"].mean()
+    st.write(f"📈 Média de ansiedade: {round(media,1)}")
+
+    if media <= 3:
+        st.success("Baixo nível de ansiedade. Continue assim.")
+    elif media <= 7:
+        st.warning("Nível moderado. Atenção aos padrões.")
+    else:
+        st.error("Nível alto. Considere agir e buscar suporte.")
