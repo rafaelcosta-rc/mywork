@@ -80,35 +80,18 @@ if os.path.exists(arquivo):
     try:
         df = pd.read_csv(arquivo, on_bad_lines='skip')
 
-        if not df.empty:
-            st.line_chart(df["nivel"])
+        # 🔥 valida estrutura
+        colunas_esperadas = ["data", "nivel", "titulo", "situacao", "pensamento", "acao"]
 
-            st.subheader("📚 Histórico")
-
-            idx = st.selectbox(
-                "Selecione",
-                df.index,
-                format_func=lambda i: f"{df.loc[i,'data']} - {df.loc[i,'titulo']}"
-            )
-
-            r = df.loc[idx]
-
-            st.markdown("### Detalhes")
-            st.write(f"Data: {r['data']}")
-            st.write(f"Nível: {r['nivel']}")
-            st.write(f"Título: {r['titulo']}")
-            st.write(f"Situação: {r['situacao']}")
-            st.write(f"Pensamento: {r['pensamento']}")
-            st.write(f"Como agi: {r['acao']}")
-
-        else:
-            st.info("Sem dados válidos ainda.")
+        if not all(col in df.columns for col in colunas_esperadas):
+            st.warning("Arquivo antigo incompatível. Criando novo...")
+            os.remove(arquivo)
+            st.rerun()
 
     except:
-        st.error("Erro ao ler os dados. Recomendo limpar o arquivo CSV.")
-
-else:
-    st.info("Nenhum registro ainda.")
+        st.warning("Arquivo corrompido. Reiniciando base...")
+        os.remove(arquivo)
+        st.rerun()
 
 # =========================
 # CTA
