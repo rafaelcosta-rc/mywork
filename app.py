@@ -52,6 +52,7 @@ titulo = gerar_titulo(situacao, pensamento)
 st.write(f"📌 Título sugerido: **{titulo}**")
 
 if st.button("Salvar registro"):
+
     data = {
         "data": datetime.now(),
         "nivel": nivel,
@@ -69,6 +70,12 @@ if st.button("Salvar registro"):
         df_novo.to_csv(arquivo, index=False)
 
     st.success("Registro salvo com sucesso!")
+
+    # limpa usando rerun (melhor abordagem)
+    st.session_state.situacao = ""
+    st.session_state.pensamento = ""
+    st.session_state.acao = ""
+    st.rerun()
 
     # 🔁 limpar campos
     st.session_state.situacao = ""
