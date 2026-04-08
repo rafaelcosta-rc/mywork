@@ -56,29 +56,29 @@ if email:
         st.write(f"Dia {dias+1}/7 do seu acesso inicial")
 
         # =========================
-        # BARRA GRADIENTE
+        # BARRA GRADIENTE + LEGENDA
         # =========================
-       st.markdown("""
-<div style="
-    width:100%;
-    height:15px;
-    border-radius:10px;
-    background: linear-gradient(to right, green, yellow, orange, red);
-    margin-bottom:10px;
-"></div>
+        st.markdown("""
+        <div style="
+            width:100%;
+            height:15px;
+            border-radius:10px;
+            background: linear-gradient(to right, green, yellow, orange, red);
+            margin-bottom:5px;
+        "></div>
 
-<div style="display:flex; justify-content:space-between; font-size:12px;">
-<span>0 - Muito baixa</span>
-<span>10 - Muito elevada</span>
-</div>
+        <div style="display:flex; justify-content:space-between; font-size:12px;">
+        <span>0 - Muito baixa</span>
+        <span>10 - Muito elevada</span>
+        </div>
 
-<div style="display:flex; justify-content:space-between; font-size:11px; margin-top:5px; color:gray;">
-<span>Baixa</span>
-<span>Moderada</span>
-<span>Alta</span>
-<span>Muito alta</span>
-</div>
-""", unsafe_allow_html=True)
+        <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:5px; color:gray;">
+        <span>Baixa</span>
+        <span>Moderada</span>
+        <span>Alta</span>
+        <span>Muito alta</span>
+        </div>
+        """, unsafe_allow_html=True)
 
         # =========================
         # FORMULÁRIO
@@ -88,6 +88,16 @@ if email:
         with st.form("form", clear_on_submit=True):
 
             nivel = st.slider("Nível de ansiedade", 0, 10)
+
+            # Feedback automático
+            if nivel <= 3:
+                st.info("Nível baixo de ansiedade")
+            elif nivel <= 6:
+                st.warning("Nível moderado")
+            elif nivel <= 8:
+                st.warning("Nível alto")
+            else:
+                st.error("Nível muito elevado")
 
             situacao = st.text_area("Situação")
             pensamento = st.text_area("Pensamento")
@@ -152,7 +162,7 @@ if email:
         # CTA
         # =========================
         st.divider()
-        st.markdown("📘 [Acessar e-book](SEU_LINK_AQUI)")
+        st.markdown("📘 [Revisar método completo](SEU_LINK_AQUI)")
 
     else:
         # 🔒 BLOQUEIO
