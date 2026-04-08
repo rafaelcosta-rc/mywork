@@ -56,7 +56,7 @@ if email:
         st.write(f"Dia {dias+1}/7 do seu acesso inicial")
 
         # =========================
-        # BARRA GRADIENTE (CORRIGIDA)
+        # BARRA GRADIENTE
         # =========================
         st.markdown(
             '<div style="width:100%;height:15px;border-radius:10px;background: linear-gradient(to right, green, yellow, orange, red);margin-bottom:8px;"></div>',
@@ -83,7 +83,6 @@ if email:
 
             nivel = st.slider("Nível de ansiedade", 0, 10)
 
-            # Feedback automático
             if nivel <= 3:
                 st.info("Nível baixo de ansiedade")
             elif nivel <= 6:
@@ -151,12 +150,6 @@ if email:
 
         else:
             st.info("Nenhum registro ainda.")
-
-        # =========================
-        # CTA
-        # =========================
-        st.divider()
-        st.markdown("📘 [Revisar método completo](SEU_LINK_AQUI)")
 
     else:
         # 🔒 BLOQUEIO
