@@ -58,28 +58,28 @@ if email:
         # =========================
         # BARRA GRADIENTE + LEGENDA
         # =========================
-        st.markdown("""
-        <div style="
-            width:100%;
-            height:15px;
-            border-radius:10px;
-            background: linear-gradient(to right, green, yellow, orange, red);
-            margin-bottom:5px;
-        "></div>
+      st.markdown('''
+<div style="
+    width:100%;
+    height:15px;
+    border-radius:10px;
+    background: linear-gradient(to right, green, yellow, orange, red);
+    margin-bottom:8px;
+"></div>
 
-        <div style="display:flex; justify-content:space-between; font-size:12px;">
-        <span>0 - Muito baixa</span>
-        <span>10 - Muito elevada</span>
-        </div>
-
-        <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:5px; color:gray;">
-        <span>Baixa</span>
-        <span>Moderada</span>
-        <span>Alta</span>
-        <span>Muito alta</span>
-        </div>
-        """, unsafe_allow_html=True)
-
+<div style="
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:gray;
+">
+<span>Muito baixa</span>
+<span>Baixa</span>
+<span>Moderada</span>
+<span>Alta</span>
+<span>Muito alta</span>
+</div>
+''', unsafe_allow_html=True)
         # =========================
         # FORMULÁRIO
         # =========================
