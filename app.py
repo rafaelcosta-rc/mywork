@@ -8,119 +8,151 @@ st.set_page_config(page_title="Ansiedade Sob Controle", layout="centered")
 arquivo = "dados.csv"
 
 # =========================
-# 🔥 Carregar dados com proteção
+# 🔐 CONTROLE DE ACESSO
 # =========================
-def carregar_dados():
-    if not os.path.exists(arquivo):
-        return pd.DataFrame()
+if "usuarios" not in st.session_state:
+    st.session_state.usuarios = {}
 
-    try:
-        df = pd.read_csv(arquivo, on_bad_lines='skip')
+email = st.text_input("Digite seu e-mail para acessar")
 
-        colunas = ["data", "nivel", "titulo", "situacao", "pensamento", "acao"]
+if email:
 
-        if not all(col in df.columns for col in colunas):
-            os.remove(arquivo)
-            return pd.DataFrame()
+    if email not in st.session_state.usuarios:
+        st.session_state.usuarios[email] = {
+            "data_inicio": datetime.now()
+        }
 
-        return df
+    data_inicio = st.session_state.usuarios[email]["data_inicio"]
+    dias = (datetime.now() - data_inicio).days
 
-    except:
-        os.remove(arquivo)
-        return pd.DataFrame()
+    if dias <= 7:
 
-# =========================
-# UI
-# =========================
-st.title("🧠 Ansiedade Sob Controle")
-st.write("Registre e acompanhe sua evolução.")
+        # =========================
+        # 🔥 Carregar dados com proteção
+        # =========================
+        def carregar_dados():
+            if not os.path.exists(arquivo):
+                return pd.DataFrame()
 
-# =========================
-# BARRA GRADIENTE
-# =========================
-st.markdown("""
-<div style="
-    width:100%;
-    height:15px;
-    border-radius:10px;
-    background: linear-gradient(to right, green, yellow, orange, red);
-    margin-bottom:10px;
-"></div>
-<div style="display:flex; justify-content:space-between; font-size:12px;">
-<span>0</span><span>10</span>
-</div>
-""", unsafe_allow_html=True)
+            try:
+                df = pd.read_csv(arquivo, on_bad_lines='skip')
 
-# =========================
-# FORMULÁRIO
-# =========================
-st.subheader("📍 Registro de Hoje")
+                colunas = ["data", "nivel", "titulo", "situacao", "pensamento", "acao"]
 
-with st.form("form", clear_on_submit=True):
+                if not all(col in df.columns for col in colunas):
+                    os.remove(arquivo)
+                    return pd.DataFrame()
 
-    nivel = st.slider("Nível de ansiedade", 0, 10)
+                return df
 
-    situacao = st.text_area("Situação")
-    pensamento = st.text_area("Pensamento")
-    acao = st.text_area("Como agi")
+            except:
+                os.remove(arquivo)
+                return pd.DataFrame()
 
-    titulo = st.text_input("Título do registro", placeholder="Digite um título curto")
+        # =========================
+        # UI
+        # =========================
+        st.title("🧠 Ansiedade Sob Controle")
+        st.write(f"Dia {dias+1}/7 do seu acesso inicial")
 
-    salvar = st.form_submit_button("Salvar")
+        # =========================
+        # BARRA GRADIENTE
+        # =========================
+        st.markdown("""
+        <div style="
+            width:100%;
+            height:15px;
+            border-radius:10px;
+            background: linear-gradient(to right, green, yellow, orange, red);
+            margin-bottom:10px;
+        "></div>
+        <div style="display:flex; justify-content:space-between; font-size:12px;">
+        <span>0</span><span>10</span>
+        </div>
+        """, unsafe_allow_html=True)
 
-    if salvar:
+        # =========================
+        # FORMULÁRIO
+        # =========================
+        st.subheader("📍 Registro de Hoje")
 
-        df_novo = pd.DataFrame([{
-            "data": datetime.now(),
-            "nivel": nivel,
-            "titulo": titulo,
-            "situacao": situacao,
-            "pensamento": pensamento,
-            "acao": acao
-        }])
+        with st.form("form", clear_on_submit=True):
 
-        if os.path.exists(arquivo):
-            df_novo.to_csv(arquivo, mode="a", header=False, index=False)
+            nivel = st.slider("Nível de ansiedade", 0, 10)
+
+            situacao = st.text_area("Situação")
+            pensamento = st.text_area("Pensamento")
+            acao = st.text_area("Como agi")
+
+            titulo = st.text_input("Título do registro", placeholder="Digite um título curto")
+
+            salvar = st.form_submit_button("Salvar")
+
+            if salvar:
+
+                df_novo = pd.DataFrame([{
+                    "data": datetime.now(),
+                    "nivel": nivel,
+                    "titulo": titulo,
+                    "situacao": situacao,
+                    "pensamento": pensamento,
+                    "acao": acao
+                }])
+
+                if os.path.exists(arquivo):
+                    df_novo.to_csv(arquivo, mode="a", header=False, index=False)
+                else:
+                    df_novo.to_csv(arquivo, index=False)
+
+                st.success("Registro salvo com sucesso!")
+
+        # =========================
+        # DADOS
+        # =========================
+        st.divider()
+        st.subheader("📊 Evolução")
+
+        df = carregar_dados()
+
+        if not df.empty:
+
+            st.line_chart(df["nivel"])
+
+            st.subheader("📚 Histórico")
+
+            opcoes = ["Selecione um registro"] + list(df.index)
+
+            escolha = st.selectbox("Escolha", opcoes)
+
+            if escolha != "Selecione um registro":
+
+                r = df.loc[escolha]
+
+                st.markdown("### Detalhes")
+                st.write(f"📅 Data: {r['data']}")
+                st.write(f"🧠 Nível: {r['nivel']}")
+                st.write(f"📌 Título: {r['titulo']}")
+                st.write(f"📍 Situação: {r['situacao']}")
+                st.write(f"💭 Pensamento: {r['pensamento']}")
+                st.write(f"⚡ Como agi: {r['acao']}")
+
         else:
-            df_novo.to_csv(arquivo, index=False)
+            st.info("Nenhum registro ainda.")
 
-        st.success("Registro salvo com sucesso!")
+        # =========================
+        # CTA
+        # =========================
+        st.divider()
+        st.markdown("📘 [Acessar e-book](SEU_LINK_AQUI)")
 
-# =========================
-# DADOS
-# =========================
-st.divider()
-st.subheader("📊 Evolução")
+    else:
+        # 🔒 BLOQUEIO
+        st.warning("Seu período inicial de 7 dias terminou.")
 
-df = carregar_dados()
+        st.markdown("""
+        Para continuar utilizando o app completo e acompanhar sua evolução:
 
-if not df.empty:
+        👉 Assine o plano mensal por apenas R$9,90
+        """)
 
-    st.line_chart(df["nivel"])
-
-    st.subheader("📚 Histórico")
-
-    opcoes = ["Selecione um registro"] + list(df.index)
-
-    escolha = st.selectbox("Escolha", opcoes)
-
-    if escolha != "Selecione um registro":
-
-        r = df.loc[escolha]
-
-        st.markdown("### Detalhes")
-        st.write(f"📅 Data: {r['data']}")
-        st.write(f"🧠 Nível: {r['nivel']}")
-        st.write(f"📌 Título: {r['titulo']}")
-        st.write(f"📍 Situação: {r['situacao']}")
-        st.write(f"💭 Pensamento: {r['pensamento']}")
-        st.write(f"⚡ Como agi: {r['acao']}")
-
-else:
-    st.info("Nenhum registro ainda.")
-
-# =========================
-# CTA
-# =========================
-st.divider()
-st.markdown("📘 [Acessar e-book](SEU_LINK_AQUI)")
+        st.link_button("Assinar agora", "SEU_LINK_KIWIFY")
