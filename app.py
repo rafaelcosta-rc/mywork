@@ -56,30 +56,23 @@ if email:
         st.write(f"Dia {dias+1}/7 do seu acesso inicial")
 
         # =========================
-        # BARRA GRADIENTE + LEGENDA
+        # BARRA GRADIENTE (CORRIGIDA)
         # =========================
-      st.markdown("""
-<div style="
-    width:100%;
-    height:15px;
-    border-radius:10px;
-    background: linear-gradient(to right, green, yellow, orange, red);
-    margin-bottom:8px;
-"></div>
+        st.markdown(
+            '<div style="width:100%;height:15px;border-radius:10px;background: linear-gradient(to right, green, yellow, orange, red);margin-bottom:8px;"></div>',
+            unsafe_allow_html=True
+        )
 
-<div style="
-    display:flex;
-    justify-content:space-between;
-    font-size:12px;
-    color:gray;
-">
-<span>Muito baixa</span>
-<span>Baixa</span>
-<span>Moderada</span>
-<span>Alta</span>
-<span>Muito alta</span>
-</div>
-''', unsafe_allow_html=True)
+        st.markdown(
+            '<div style="display:flex; justify-content:space-between; font-size:12px; color:gray;">'
+            '<span>Muito baixa</span>'
+            '<span>Baixa</span>'
+            '<span>Moderada</span>'
+            '<span>Alta</span>'
+            '<span>Muito alta</span>'
+            '</div>',
+            unsafe_allow_html=True
+        )
 
         # =========================
         # FORMULÁRIO
