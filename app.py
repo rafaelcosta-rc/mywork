@@ -58,7 +58,7 @@ if email:
         # =========================
         # BARRA GRADIENTE + LEGENDA
         # =========================
-      st.markdown('''
+      st.markdown("""
 <div style="
     width:100%;
     height:15px;
@@ -80,6 +80,7 @@ if email:
 <span>Muito alta</span>
 </div>
 ''', unsafe_allow_html=True)
+
         # =========================
         # FORMULÁRIO
         # =========================
